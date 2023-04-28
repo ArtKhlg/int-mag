@@ -1,0 +1,4 @@
+{
+  "port": 8080,
+  "mongoUri": "mongodb+srv://shhessa:Shhessa1@cluster0.gfxrse1.mongodb.net/int-mag?retryWrites=true&w=majority"
+}
