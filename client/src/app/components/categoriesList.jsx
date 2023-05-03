@@ -46,7 +46,7 @@ const CategoriesList = ({
     );
 };
 CategoriesList.defaultProps = {
-    valueProperty: "id",
+    valueProperty: "_id",
     contentProperty: "name"
 };
 CategoriesList.propTypes = {

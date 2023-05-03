@@ -1,23 +1,20 @@
-import React, { useEffect, useState } from "react";
-import api from "../api";
+import React, { useState } from "react";
+// import api from "../api";
 import CategoriesList from "./categoriesList";
 import SearchProducts from "./searchProducts";
 import ProductsList from "./productsList";
 import PropTypes from "prop-types";
 import { useHistory } from "react-router-dom";
+import { useProducts } from "../hooks/useProducts";
+import { useCategories } from "../hooks/useCategories";
 
 const ProductsListPage = ({ categoryId }) => {
-    const [categories, setCategories] = useState();
-    const [products, setProducts] = useState();
     const [selectedCat, setSelectedCat] = useState();
     const [searchData, setSearchData] = useState({ search: "" });
     const history = useHistory();
 
-    useEffect(() => {
-        api.products.fetchAll().then((data) => setProducts(data));
-        api.categories.fetchAll().then((data) => setCategories(data));
-    }, []);
-
+    const { products } = useProducts();
+    const { categories } = useCategories();
     const handleCategorySelect = (item) => {
         history.push(`/`);
         setSelectedCat(item);
@@ -33,17 +30,16 @@ const ProductsListPage = ({ categoryId }) => {
     };
 
     const clearFilter = () => {
+        history.push(`/`);
         setSelectedCat();
         setSearchData({ search: "" });
     };
 
     if (products && categories) {
         const filteredProducts = categoryId
-            ? products.filter((product) => product.category?.id === categoryId)
+            ? products.filter((product) => product.category === categoryId)
             : selectedCat
-            ? products.filter(
-                  (product) => product.category?.name === selectedCat?.name
-              )
+            ? products.filter((product) => product.category === selectedCat._id)
             : typeof searchData.search !== "string"
             ? products
             : products.filter((product) =>
