@@ -5,6 +5,8 @@ const schema = new Schema(
     name: { type: String },
     email: { type: String, required: true, unique: true },
     password: { type: String },
+    orders: { type: Array },
+    image: String,
     sex: { type: String, enum: ["male", "female", "other"] },
   },
   {
