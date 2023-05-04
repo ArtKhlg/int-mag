@@ -18,13 +18,15 @@ const Main = () => {
     const { productId, categoryId } = params;
     return (
         <>
-            {categoryId ? (
-                <ProductsListPage categoryId={categoryId} />
-            ) : productId ? (
-                <ProductPage productId={productId} />
-            ) : (
-                <ProductsListPage />
-            )}
+            <div style={{ backgroundColor: "#d2c9ff" }}>
+                {categoryId ? (
+                    <ProductsListPage categoryId={categoryId} />
+                ) : productId ? (
+                    <ProductPage productId={productId} />
+                ) : (
+                    <ProductsListPage />
+                )}
+            </div>
         </>
     );
 };

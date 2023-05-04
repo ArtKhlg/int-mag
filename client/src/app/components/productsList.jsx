@@ -39,7 +39,11 @@ const ProductsList = ({ products }) => {
             </button>
 
             {sortProducts.map((product) => (
-                <div key={product._id} className="shadow p-4 d-flex">
+                <div
+                    key={product._id}
+                    className="shadow p-4 d-flex mb-2"
+                    style={{ backgroundColor: "white", borderRadius: "15px" }}
+                >
                     <div className="col-md-6 ">
                         <img
                             className="mw-100 p-2"
@@ -57,7 +61,7 @@ const ProductsList = ({ products }) => {
                         {/* <p>ID: {product._id}</p> */}
                         {/* <p>Количество: {product.quantity}</p> */}
                         <p>
-                            Цена: <b>{product.price}</b>
+                            Цена: <b>{product.price.toLocaleString()}</b> рублей
                         </p>
                         <div className="col-md-6 ms-auto">
                             <button

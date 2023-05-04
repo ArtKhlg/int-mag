@@ -5,10 +5,13 @@ import { useHistory } from "react-router-dom";
 const ShoppingCart = () => {
     const history = useHistory();
     const { currentUser, updateUserData } = useAuth();
-
-    console.log("currentUser", currentUser);
     const findUniqOrders = () => {
         if (currentUser.orders) {
+            currentUser.orders.sort((a, b) => {
+                if (a.name < b.name) return -1;
+                if (a.name > b.name) return 1;
+                return 0;
+            });
             const arrIds = [];
             for (const prod of currentUser.orders) {
                 arrIds.push(prod._id);
@@ -26,7 +29,9 @@ const ShoppingCart = () => {
             return null;
         }
     };
-    const price = currentUser?.orders?.reduce((acc, ord) => acc + ord.price, 0);
+    const summaryPrice = currentUser?.orders
+        ?.reduce((acc, ord) => acc + ord.price, 0)
+        .toLocaleString();
     const uniqueProducts = findUniqOrders();
 
     const handleClickRemoveItem = (item) => {
@@ -43,7 +48,36 @@ const ShoppingCart = () => {
     const handleClickProductPage = (item) => {
         history.push(`/products/${item._id}`);
     };
-    console.log("currentUser.orders", currentUser.orders);
+
+    const renderPhrase = (number) => {
+        return number === 1
+            ? number + " товар"
+            : number > 1 && number < 5
+            ? number + " товара"
+            : number + " товаров";
+    };
+
+    const handleClickDecrement = async (item) => {
+        try {
+            const removeId = currentUser.orders.findIndex(
+                (o) => o._id === item._id
+            );
+            currentUser.orders.splice(removeId, 1);
+            await updateUserData({ ...currentUser });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleClickIncrement = async (item) => {
+        try {
+            currentUser.orders.push(item);
+            await updateUserData({ ...currentUser });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
         <>
             (
@@ -69,12 +103,11 @@ const ShoppingCart = () => {
                                                                 Корзина
                                                             </h1>
                                                             <h6 className="mb-0 text-muted">
-                                                                {
+                                                                {renderPhrase(
                                                                     currentUser
                                                                         .orders
                                                                         .length
-                                                                }{" "}
-                                                                товаров
+                                                                )}{" "}
                                                             </h6>
                                                         </div>
                                                         <hr className="my-4" />
@@ -85,7 +118,7 @@ const ShoppingCart = () => {
                                                                     key={o._id}
                                                                     className="row mb-4 d-flex justify-content-between align-items-center"
                                                                 >
-                                                                    <div className="col-md-2 col-lg-2 col-xl-2">
+                                                                    <div className="col-md-2 col-lg-2 col-xl-3  ">
                                                                         <img
                                                                             src={
                                                                                 o.image
@@ -96,7 +129,7 @@ const ShoppingCart = () => {
                                                                             }
                                                                         />
                                                                     </div>
-                                                                    <div className="col-md-3 col-lg-3 col-xl-3">
+                                                                    <div className="col-md-3 col-lg-3 col-xl-2">
                                                                         <h6
                                                                             className="text-black mb-0"
                                                                             role="button"
@@ -111,30 +144,73 @@ const ShoppingCart = () => {
                                                                             }
                                                                         </h6>
                                                                     </div>
-                                                                    <div className="col-md-3 col-lg-3 col-xl-2 d-flex">
-                                                                        <button className="btn btn-light">
+                                                                    <div className="col-md-3 col-lg-3 col-xl-1 d-flex">
+                                                                        <button
+                                                                            className="btn btn-light"
+                                                                            onClick={() =>
+                                                                                handleClickDecrement(
+                                                                                    o
+                                                                                )
+                                                                            }
+                                                                        >
                                                                             -
                                                                         </button>
-                                                                        {
-                                                                            currentUser.orders.filter(
-                                                                                (
-                                                                                    ord
-                                                                                ) =>
-                                                                                    ord._id ===
-                                                                                    o._id
-                                                                            )
-                                                                                .length
-                                                                        }
-                                                                        <button className="btn btn-light">
+                                                                        <div className="badge bg-info">
+                                                                            <span className="align-center">
+                                                                                {" "}
+                                                                                {
+                                                                                    currentUser.orders.filter(
+                                                                                        (
+                                                                                            ord
+                                                                                        ) =>
+                                                                                            ord._id ===
+                                                                                            o._id
+                                                                                    )
+                                                                                        .length
+                                                                                }
+                                                                            </span>
+                                                                        </div>
+                                                                        <button
+                                                                            className="btn btn-light"
+                                                                            onClick={() =>
+                                                                                handleClickIncrement(
+                                                                                    o
+                                                                                )
+                                                                            }
+                                                                        >
                                                                             +
                                                                         </button>
                                                                     </div>
-                                                                    <div className="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                                                                    <div className="col-md-4 col-lg-2 col-xl-3 offset-lg-1">
                                                                         <h6 className="mb-0">
+                                                                            {o.price.toLocaleString()}
                                                                             {
-                                                                                o.price
+                                                                                "руб "
                                                                             }
+                                                                            за 1
+                                                                            шт.
                                                                         </h6>
+                                                                        <p className="fs-6">
+                                                                            {
+                                                                                " Итог: "
+                                                                            }
+                                                                            {(
+                                                                                o.price *
+                                                                                currentUser.orders.filter(
+                                                                                    (
+                                                                                        ord
+                                                                                    ) =>
+                                                                                        ord._id ===
+                                                                                        o._id
+                                                                                )
+                                                                                    .length
+                                                                            ).toLocaleString()}
+                                                                            {
+                                                                                "руб "
+                                                                            }
+                                                                            за
+                                                                            все
+                                                                        </p>
                                                                     </div>
                                                                     <div className="col-md-1 col-lg-1 col-xl-1 text-end">
                                                                         <button
@@ -173,70 +249,25 @@ const ShoppingCart = () => {
                                                         </h3>
                                                         <hr className="my-4" />
 
-                                                        <div className="d-flex justify-content-between mb-4">
+                                                        <div className="d-flex flex-column justify-content-between mb-4">
                                                             <h5 className="text-uppercase">
-                                                                {
+                                                                {renderPhrase(
                                                                     currentUser
                                                                         .orders
                                                                         .length
-                                                                }{" "}
-                                                                товаров
+                                                                )}{" "}
                                                             </h5>
-                                                            <h5>
-                                                                {price} рублей
-                                                            </h5>
+                                                            <div>
+                                                                <h5>
+                                                                    {
+                                                                        summaryPrice
+                                                                    }{" "}
+                                                                    рублей
+                                                                </h5>
+                                                            </div>
                                                         </div>
 
-                                                        {/* <h5 className="text-uppercase mb-3">
-                                                    Shipping
-                                                </h5>
-
-                                                <div className="mb-4 pb-2">
-                                                    <select className="select">
-                                                        <option value="1">
-                                                            Standard-Delivery-
-                                                            €5.00
-                                                        </option>
-                                                        <option value="2">
-                                                            Two
-                                                        </option>
-                                                        <option value="3">
-                                                            Three
-                                                        </option>
-                                                        <option value="4">
-                                                            Four
-                                                        </option>
-                                                    </select>
-                                                </div>
-
-                                                <h5 className="text-uppercase mb-3">
-                                                    Give code
-                                                </h5>
-
-                                                <div className="mb-5">
-                                                    <div className="form-outline">
-                                                        <input
-                                                            type="text"
-                                                            id="form3Examplea2"
-                                                            className="form-control form-control-lg"
-                                                        />
-                                                        <label
-                                                            className="form-label"
-                                                            htmlFor="form3Examplea2"
-                                                        >
-                                                            Enter your code
-                                                        </label>
-                                                    </div>
-                                                </div> */}
-
                                                         <hr className="my-4" />
-
-                                                        {/* <div className="d-flex justify-content-between mb-5">
-                                                    <h5 className="text-uppercase">
-                                                        Ито
-                                                    </h5>
-                                                    <h5>€ 137.00</h5>
-                                                </div> */}
 
                                                         <button
                                                             type="button"

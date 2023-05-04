@@ -11,12 +11,13 @@ const ProductPage = ({ productId }) => {
     const { products } = useProducts();
     const history = useHistory();
     const [product, setProduct] = useState();
+    const [order, setOrder] = useState(
+        currentUser?.orders?.filter((o) => o._id === productId)
+    );
+
     useEffect(() => {
         setProduct(getProduct(productId));
     }, [products]);
-    const [order, setOrder] = useState(
-        currentUser?.orders?.filter((o) => o._id === productId || [])
-    );
     console.log("order", order);
     const { isLoading, getProduct } = useProducts();
     const { getCategory } = useCategories();
@@ -29,6 +30,23 @@ const ProductPage = ({ productId }) => {
     const handleClickCategory = () => {
         history.push(`/products/${productId}/${category._id}`);
     };
+
+    const handleClickDecrement = async () => {
+        try {
+            const removeId = currentUser.orders.findIndex(
+                (o) => o._id === productId
+            );
+            currentUser.orders.splice(removeId, 1);
+            console.log("new order", currentUser.orders);
+
+            setOrder(currentUser?.orders?.filter((o) => o._id === productId));
+            await updateUserData({ ...currentUser });
+            console.log("order", order);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     const handleClickBuy = async () => {
         try {
             if (!order) {
@@ -65,7 +83,7 @@ const ProductPage = ({ productId }) => {
                 >
                     {category.name}
                 </span>
-                <div className="d-flex flex-wrap card mb-3 bg-light">
+                <div className="d-flex flex-wrap card m-5 bg-light flex-column contentJustify-center">
                     <div className="row g-0">
                         <div className="col">
                             <img
@@ -111,7 +129,10 @@ const ProductPage = ({ productId }) => {
                                     </button>
                                 ) : (
                                     <>
-                                        <button className="btn btn-danger">
+                                        <button
+                                            className="btn btn-danger"
+                                            onClick={handleClickDecrement}
+                                        >
                                             -
                                         </button>
                                         {order?.length}{" "}
