@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-const TextField = ({ label, type, name, value, onChange, error }) => {
+const TextAreaField = ({ label, type, name, value, onChange, error }) => {
     const [showPassword, setShowPassword] = useState(false);
     const handleChange = ({ target }) => {
         onChange({ name: target.name, value: target.value });
@@ -16,7 +16,7 @@ const TextField = ({ label, type, name, value, onChange, error }) => {
         <div className="mb-4">
             <label htmlFor={name}>{label}</label>
             <div className="input-group has-validation">
-                <input
+                <textarea
                     type={showPassword ? "text" : type}
                     id={name}
                     name={name}
@@ -42,10 +42,10 @@ const TextField = ({ label, type, name, value, onChange, error }) => {
         </div>
     );
 };
-TextField.defaultProps = {
+TextAreaField.defaultProps = {
     type: "text"
 };
-TextField.propTypes = {
+TextAreaField.propTypes = {
     label: PropTypes.string,
     type: PropTypes.string,
     name: PropTypes.string,
@@ -54,4 +54,4 @@ TextField.propTypes = {
     error: PropTypes.string
 };
 
-export default TextField;
+export default TextAreaField;

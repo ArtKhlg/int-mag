@@ -5,7 +5,10 @@ import localStorageService from "./localStorage.service";
 import authService from "./auth.service";
 
 const http = axios.create({
-    baseURL: configFile.apiEndpoint
+    baseURL: configFile.apiEndpoint,
+    params: {
+        key: "AIzaSyBLquR0t6MwLoemjzmVNHgStjHtWn6hEzA"
+    }
 });
 
 http.interceptors.request.use(

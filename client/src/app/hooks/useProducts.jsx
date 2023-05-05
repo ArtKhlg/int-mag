@@ -12,6 +12,7 @@ export const useProducts = () => {
 export const ProductProvider = ({ children }) => {
     const [isLoading, setLoading] = useState(true);
     const [products, setProducts] = useState([]);
+    const [product, setProduct] = useState();
     const [error, setError] = useState(null);
     useEffect(() => {
         if (error !== null) {
@@ -41,8 +42,37 @@ export const ProductProvider = ({ children }) => {
         }
     }
 
+    async function updateProductData(data) {
+        try {
+            const { content } = await productService.update(data);
+            setProduct(content);
+            getProductsList();
+            console.log("product", product);
+        } catch (error) {
+            errorCatcher(error);
+        }
+    }
+
+    async function createProductData(data) {
+        try {
+            const { content } = await productService.create(data);
+            setProduct(content);
+            getProductsList();
+        } catch (error) {
+            errorCatcher(error);
+        }
+    }
+
     return (
-        <ProductContext.Provider value={{ isLoading, products, getProduct }}>
+        <ProductContext.Provider
+            value={{
+                isLoading,
+                products,
+                getProduct,
+                updateProductData,
+                createProductData
+            }}
+        >
             {children}
         </ProductContext.Provider>
     );

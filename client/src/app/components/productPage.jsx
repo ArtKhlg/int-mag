@@ -5,6 +5,7 @@ import { useProducts } from "../hooks/useProducts";
 import { useCategories } from "../hooks/useCategories";
 import Category from "./ui/category";
 import { useAuth } from "../hooks/useAuth";
+import RecommendProducts from "./ui/recommendProducts";
 
 const ProductPage = ({ productId }) => {
     const { currentUser, updateUserData } = useAuth();
@@ -18,14 +19,13 @@ const ProductPage = ({ productId }) => {
     useEffect(() => {
         setProduct(getProduct(productId));
     }, [products]);
-    console.log("order", order);
     const { isLoading, getProduct } = useProducts();
     const { getCategory } = useCategories();
 
     const category = getCategory(product?.category);
 
     const handleClick = () => {
-        history.push(`/products`);
+        history.push(`/`);
     };
     const handleClickCategory = () => {
         history.push(`/products/${productId}/${category._id}`);
@@ -37,11 +37,8 @@ const ProductPage = ({ productId }) => {
                 (o) => o._id === productId
             );
             currentUser.orders.splice(removeId, 1);
-            console.log("new order", currentUser.orders);
-
             setOrder(currentUser?.orders?.filter((o) => o._id === productId));
             await updateUserData({ ...currentUser });
-            console.log("order", order);
         } catch (error) {
             console.log(error);
         }
@@ -54,13 +51,9 @@ const ProductPage = ({ productId }) => {
                 currentUser.orders = [product];
             } else {
                 setOrder((prevState) => [...prevState, product]);
-
                 currentUser.orders.push(product);
             }
-
             await updateUserData({ ...currentUser });
-
-            console.log(currentUser);
         } catch (error) {
             console.log(error);
         }
@@ -81,14 +74,15 @@ const ProductPage = ({ productId }) => {
                     className="text-decoration-underline fst-italic"
                     onClick={handleClickCategory}
                 >
-                    {category.name}
+                    {category?.name}
                 </span>
                 <div className="d-flex flex-wrap card m-5 bg-light flex-column contentJustify-center">
                     <div className="row g-0">
-                        <div className="col">
+                        <div className="col m-4">
                             <img
                                 src={product.image}
                                 width="600"
+                                className="img-fluid rounded-3"
                                 alt={product.name}
                                 style={{
                                     borderRadius: "10px"
@@ -118,36 +112,65 @@ const ProductPage = ({ productId }) => {
                                     <p>{product.desc}</p>
                                 </h6>
                             </div>
-                            <div className="col">
-                                {!order || order.length === 0 ? (
-                                    <button
-                                        type="button"
-                                        className="btn btn-outline-success"
-                                        onClick={handleClickBuy}
-                                    >
-                                        <h2>Купить</h2>
-                                    </button>
-                                ) : (
-                                    <>
+                            {!currentUser ? (
+                                <a href="/login">Авторизуйтесь, чтобы купить</a>
+                            ) : (
+                                <div className="col">
+                                    {product.quantity > 0 ? (
+                                        !order || order.length === 0 ? (
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline-success"
+                                                onClick={handleClickBuy}
+                                            >
+                                                <h2>Купить</h2>
+                                            </button>
+                                        ) : order.length < product.quantity ? (
+                                            <>
+                                                <button
+                                                    className="btn btn-danger"
+                                                    onClick={
+                                                        handleClickDecrement
+                                                    }
+                                                >
+                                                    -
+                                                </button>
+                                                {order?.length}{" "}
+                                                <button
+                                                    className="btn btn-success"
+                                                    onClick={handleClickBuy}
+                                                >
+                                                    +
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <div>
+                                                <button
+                                                    className="btn btn-danger"
+                                                    onClick={
+                                                        handleClickDecrement
+                                                    }
+                                                >
+                                                    -
+                                                </button>
+                                                {order?.length}{" "}
+                                            </div>
+                                        )
+                                    ) : (
                                         <button
-                                            className="btn btn-danger"
-                                            onClick={handleClickDecrement}
-                                        >
-                                            -
-                                        </button>
-                                        {order?.length}{" "}
-                                        <button
-                                            className="btn btn-success"
+                                            type="button"
+                                            className="btn btn-secondary"
                                             onClick={handleClickBuy}
+                                            disabled
                                         >
-                                            +
+                                            <h2>Нет в наличии</h2>
                                         </button>
-                                    </>
-                                )}
-                                <div className="d-flex align-items-end">
-                                    <p>id:{product._id}</p>
+                                    )}
+                                    <div className="d-flex align-items-end">
+                                        <p>id:{product._id}</p>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -158,6 +181,7 @@ const ProductPage = ({ productId }) => {
                 >
                     <h2>Вернуться в каталог</h2>
                 </button>
+                <RecommendProducts categoryId={product.category} />
             </>
         );
     } else return "loading...";

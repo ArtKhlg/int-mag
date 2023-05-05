@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useHistory } from "react-router-dom";
+import { useProducts } from "../hooks/useProducts";
+import Modal from "../components/common/modal/modalComponent";
+import { nanoid } from "nanoid";
 
 const ShoppingCart = () => {
     const history = useHistory();
+    const { getProduct, products, updateProductData } = useProducts();
     const { currentUser, updateUserData } = useAuth();
     const findUniqOrders = () => {
         if (currentUser.orders) {
@@ -33,6 +37,11 @@ const ShoppingCart = () => {
         ?.reduce((acc, ord) => acc + ord.price, 0)
         .toLocaleString();
     const uniqueProducts = findUniqOrders();
+    uniqueProducts?.map((prod) => {
+        return (prod.quantity = currentUser.orders.filter(
+            (ord) => ord._id === prod._id
+        ).length);
+    });
 
     const handleClickRemoveItem = (item) => {
         const newOrders = [];
@@ -77,7 +86,39 @@ const ShoppingCart = () => {
             console.log(error);
         }
     };
+    const handleClickOrder = async () => {
+        products.map((prod) => {
+            for (const ord of uniqueProducts) {
+                if (prod._id === ord._id) {
+                    prod.quantity -= ord.quantity;
+                }
+            }
+            return prod;
+        });
+        products.map((prod) => {
+            return updateProductData({ ...prod });
+        });
+        currentUser.purchaseHistory
+            ? (currentUser.purchaseHistory = [
+                  ...currentUser.purchaseHistory,
+                  {
+                      _id: nanoid(),
+                      purchase: uniqueProducts
+                  }
+              ])
+            : (currentUser.purchaseHistory = [
+                  {
+                      _id: nanoid(),
+                      created_at: Date.now(),
+                      purchase: uniqueProducts
+                  }
+              ]);
+        currentUser.orders = [];
+        await updateUserData({ ...currentUser });
+        history.push("/thanks");
+    };
 
+    const [modalActive, setModalActive] = useState(false);
     return (
         <>
             (
@@ -85,7 +126,7 @@ const ShoppingCart = () => {
                 <>
                     <section
                         className="h-100 h-custom"
-                        style={{ backgroundColor: "#d2c9ff" }}
+                        style={{ backgroundColor: "#eee" }}
                     >
                         <div className="container py-5 h-100">
                             <div className="row d-flex justify-content-center align-items-center h-100">
@@ -156,30 +197,29 @@ const ShoppingCart = () => {
                                                                             -
                                                                         </button>
                                                                         <div className="badge bg-info">
-                                                                            <span className="align-center">
+                                                                            <span className="fs-5">
                                                                                 {" "}
                                                                                 {
-                                                                                    currentUser.orders.filter(
-                                                                                        (
-                                                                                            ord
-                                                                                        ) =>
-                                                                                            ord._id ===
-                                                                                            o._id
-                                                                                    )
-                                                                                        .length
+                                                                                    o.quantity
                                                                                 }
                                                                             </span>
                                                                         </div>
-                                                                        <button
-                                                                            className="btn btn-light"
-                                                                            onClick={() =>
-                                                                                handleClickIncrement(
-                                                                                    o
-                                                                                )
-                                                                            }
-                                                                        >
-                                                                            +
-                                                                        </button>
+                                                                        {o.quantity <
+                                                                        getProduct(
+                                                                            o._id
+                                                                        )
+                                                                            ?.quantity ? (
+                                                                            <button
+                                                                                className="btn btn-light"
+                                                                                onClick={() =>
+                                                                                    handleClickIncrement(
+                                                                                        o
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                +
+                                                                            </button>
+                                                                        ) : null}
                                                                     </div>
                                                                     <div className="col-md-4 col-lg-2 col-xl-3 offset-lg-1">
                                                                         <h6 className="mb-0">
@@ -227,14 +267,13 @@ const ShoppingCart = () => {
                                                                 </div>
                                                             )
                                                         )}
-
-                                                        <div className="pt-5">
+                                                        <div className="pt-1">
                                                             <h6 className="mb-0">
                                                                 <a
                                                                     href="/"
                                                                     className="text-body"
                                                                 >
-                                                                    <i className="fas fa-long-arrow-alt-left me-2"></i>
+                                                                    <i className="bi bi-arrow-left-square-fill me-2"></i>
                                                                     Назад в
                                                                     магазин
                                                                 </a>
@@ -269,13 +308,97 @@ const ShoppingCart = () => {
 
                                                         <hr className="my-4" />
 
-                                                        <button
+                                                        {/* <button
                                                             type="button"
                                                             className="btn btn-dark btn-block btn-lg"
                                                             data-mdb-ripple-color="dark"
+                                                            onClick={
+                                                                handleClickOrder
+                                                            }
                                                         >
                                                             Заказать
-                                                        </button>
+                                                        </button> */}
+                                                        <div className="app">
+                                                            <button
+                                                                className="open-btn btn btn-dark"
+                                                                onClick={() =>
+                                                                    setModalActive(
+                                                                        true
+                                                                    )
+                                                                }
+                                                            >
+                                                                Заказать
+                                                            </button>
+                                                            <Modal
+                                                                active={
+                                                                    modalActive
+                                                                }
+                                                                setActive={
+                                                                    setModalActive
+                                                                }
+                                                            >
+                                                                <div className="modal-body">
+                                                                    <div>
+                                                                        Заказ
+                                                                        сформирован!
+                                                                        Подтвердите
+                                                                        покупку
+                                                                        <ul>
+                                                                            {" "}
+                                                                            {uniqueProducts.map(
+                                                                                (
+                                                                                    prod
+                                                                                ) => {
+                                                                                    return (
+                                                                                        <div
+                                                                                            key={
+                                                                                                prod._id
+                                                                                            }
+                                                                                        >
+                                                                                            <li>
+                                                                                                {
+                                                                                                    prod.name
+                                                                                                }{" "}
+                                                                                                ---{" "}
+                                                                                                {prod.price.toLocaleString()}
+                                                                                                руб.
+                                                                                                ---{" "}
+                                                                                                {
+                                                                                                    prod.quantity
+                                                                                                }
+                                                                                                шт.
+                                                                                            </li>
+                                                                                        </div>
+                                                                                    );
+                                                                                }
+                                                                            )}
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="modal-footer">
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-secondary"
+                                                                        onClick={() =>
+                                                                            setModalActive(
+                                                                                false
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        Отменить
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-success"
+                                                                        onClick={
+                                                                            handleClickOrder
+                                                                        }
+                                                                    >
+                                                                        Подтверждаю
+                                                                    </button>
+                                                                </div>
+                                                            </Modal>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -289,7 +412,7 @@ const ShoppingCart = () => {
             ) : (
                 <section
                     className="h-100 h-custom"
-                    style={{ backgroundColor: "#d2c9ff" }}
+                    style={{ backgroundColor: "#eee" }}
                 >
                     <div className="container py-5 h-100">
                         <div className="row d-flex justify-content-center align-items-center h-100">

@@ -7,12 +7,12 @@ import localStorageService, {
     setTokens
 } from "../services/localStorage.service";
 import { useHistory } from "react-router-dom";
-const REACT_APP_FIREBASE_KEY = "AIzaSyBLquR0t6MwLoemjzmVNHgStjHtWn6hEzA";
+// const REACT_APP_FIREBASE_KEY = "AIzaSyBLquR0t6MwLoemjzmVNHgStjHtWn6hEzA";
 
 export const httpAuth = axios.create({
     baseURL: "https://identitytoolkit.googleapis.com/v1/",
     params: {
-        key: REACT_APP_FIREBASE_KEY
+        key: "AIzaSyBLquR0t6MwLoemjzmVNHgStjHtWn6hEzA"
     }
 });
 const AuthContext = React.createContext();
@@ -42,7 +42,6 @@ const AuthProvider = ({ children }) => {
         } catch (error) {
             errorCatcher(error);
             const { code, message } = error.response.data.error;
-            console.log(code, message);
             if (code === 400) {
                 switch (message) {
                     case "INVALID_PASSWORD":
@@ -82,6 +81,8 @@ const AuthProvider = ({ children }) => {
                 _id: data.localId,
                 email,
                 orders: [],
+                admin: false,
+                purchaseHistory: [],
                 image: `https://avatars.dicebear.com/api/avataaars/${(
                     Math.random() + 1
                 )
@@ -92,7 +93,6 @@ const AuthProvider = ({ children }) => {
         } catch (error) {
             errorCatcher(error);
             const { code, message } = error.response.data.error;
-            console.log(code, message);
             if (code === 400) {
                 if (message === "EMAIL_EXISTS") {
                     const errorObject = {
@@ -106,7 +106,6 @@ const AuthProvider = ({ children }) => {
     async function createUser(data) {
         try {
             const { content } = await userService.create(data);
-            console.log(content);
             setUser(content);
         } catch (error) {
             errorCatcher(error);
