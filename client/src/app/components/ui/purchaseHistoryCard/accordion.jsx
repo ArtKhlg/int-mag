@@ -3,7 +3,6 @@ import Chevron from "./chevron";
 import PropTypes from "prop-types";
 
 import "./Accordion.css";
-// import { displayDate } from "../../../utils/displayDate";
 
 function Accordion({ purch }) {
     const [setActive, setActiveState] = useState("");

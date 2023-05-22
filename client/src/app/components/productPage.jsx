@@ -43,10 +43,10 @@ const ProductPage = ({ productId }) => {
             console.log(error);
         }
     };
-
+    console.log(currentUser.orders);
     const handleClickBuy = async () => {
         try {
-            if (!order) {
+            if (!order || currentUser.orders === null) {
                 setOrder([product]);
                 currentUser.orders = [product];
             } else {

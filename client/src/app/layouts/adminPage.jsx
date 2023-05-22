@@ -3,11 +3,11 @@ import React from "react";
 // import { useCategories } from "../hooks/useCategories";
 import TableHeader from "../components/common/table/tableHeader";
 import TableBody from "../components/common/table/tableBody";
-import EditProductButton from "../components/editProductButton";
-
+import EditProduct from "../components/editProductButton";
 import EditProductPage from "../components/editProductPage";
-import { useHistory, useParams } from "react-router-dom/cjs/react-router-dom";
 import AddProductPage from "../components/addProductPage";
+import DeleteProduct from "../components/deleteProductButton.jsx";
+import { useHistory, useParams } from "react-router-dom/cjs/react-router-dom";
 
 const AdminPage = () => {
     const history = useHistory();
@@ -46,7 +46,12 @@ const AdminPage = () => {
         edit: {
             path: "edit",
             name: "Редактировать",
-            component: (product) => <EditProductButton product={product} />
+            component: (product) => <EditProduct product={product} />
+        },
+        delete: {
+            path: "delete",
+            name: "Удалить",
+            component: (product) => <DeleteProduct product={product} />
         }
     };
 

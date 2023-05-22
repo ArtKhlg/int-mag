@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 import Login from "./layouts/login";
 import Main from "./layouts/main";
 import NavBar from "./components/ui/navBar";
@@ -12,7 +12,6 @@ import ProtectedRoute from "./components/common/protectedRoute";
 import LogOut from "./layouts/logOut";
 import AdminPage from "./layouts/adminPage";
 import Thanks from "./layouts/thanks";
-// import ProductPage from "./components/productPage";
 
 function App() {
     return (
@@ -42,7 +41,7 @@ function App() {
                                 path="/products/:productId?/:categoryId?"
                                 component={Main}
                             />
-                            {/* <Redirect to="/" /> */}
+                            <Redirect to="/" />
                         </CategoriesProvider>
                     </ProductProvider>
                 </Switch>

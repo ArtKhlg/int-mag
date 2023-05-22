@@ -41,30 +41,37 @@ const ProductsList = ({ products }) => {
                 {sortProducts.map((product) => (
                     <div
                         key={product._id}
+                        type="button"
+                        onClick={() => handleClick(product._id)}
                         className="row col-lg-5 col-md-12 m-4 mb-2"
                         style={{
                             backgroundColor: "white",
-                            borderRadius: "15px"
+                            borderRadius: "15px",
+                            width: "430px"
                         }}
                     >
-                        <div className="col-lg-2 col-xl-6 mt-2">
+                        <div className="col-lg-7 col-xl-6 mt-2 ">
                             <img
-                                className="img-fluid rounded-4 p-2"
+                                className="img-fluid rounded-3"
                                 src={product.image}
                                 height="200"
                                 alt={product.name}
                             />
                         </div>
-                        <div className="col-lg-2 col-xl-6 mt-2 ">
+                        <div className="col-lg-7 col-xl-6 mt-2 ">
                             <h5>{product.name}</h5>
                             <Category id={product.category} />
                             {/* <p>ID: {product._id}</p> */}
-                            {/* <p>Количество: {product.quantity}</p> */}
                             <p>
                                 Цена: <b>{product.price.toLocaleString()}</b>{" "}
                                 рублей
                             </p>
-                            <div className="col-md-6 ms-auto pb-2">
+                            {product.quantity > 0 ? (
+                                <p>Количество: {product.quantity}</p>
+                            ) : (
+                                <p>нет в наличии</p>
+                            )}
+                            {/* <div className="col-md-6 ms-auto pb-2">
                                 <button
                                     type="button"
                                     className="btn btn-outline-info"
@@ -72,7 +79,7 @@ const ProductsList = ({ products }) => {
                                 >
                                     Карточка товара
                                 </button>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 ))}

@@ -63,6 +63,20 @@ export const ProductProvider = ({ children }) => {
         }
     }
 
+    async function deleteProductFromList(id) {
+        try {
+            const { content } = await productService.delete(id);
+            if (content !== null) {
+                setProduct((prevState) =>
+                    prevState.filter((c) => c._id !== id)
+                );
+            }
+            getProductsList();
+        } catch (error) {
+            errorCatcher(error);
+        }
+    }
+
     return (
         <ProductContext.Provider
             value={{
@@ -70,7 +84,8 @@ export const ProductProvider = ({ children }) => {
                 products,
                 getProduct,
                 updateProductData,
-                createProductData
+                createProductData,
+                deleteProductFromList
             }}
         >
             {children}

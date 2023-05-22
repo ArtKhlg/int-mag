@@ -103,6 +103,7 @@ const ShoppingCart = () => {
                   ...currentUser.purchaseHistory,
                   {
                       _id: nanoid(),
+                      created_at: Date.now(),
                       purchase: uniqueProducts
                   }
               ])
