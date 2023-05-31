@@ -1,9 +1,9 @@
 import React from "react";
-import { useHistory } from "react-router-dom/cjs/react-router-dom";
+// import { useHistory } from "react-router-dom/cjs/react-router-dom";
 const Thanks = () => {
-    const history = useHistory();
+    // const history = useHistory();
     const handleClick = () => {
-        history.push("/");
+        window.location.pathname = `/`;
     };
     return (
         <>

@@ -1,20 +1,17 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { useHistory } from "react-router-dom";
-import { useParams } from "react-router-dom/cjs/react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import EditUserPage from "./editUserPage";
-import { useAuth } from "../../hooks/useAuth";
 import PurchaseHistoryCard from "./purchaseHistoryCard/purchaseHistoryCard";
-// import { useSelector } from "react-redux";
-// import { getCurrentUserId } from "../../store/users";
+import { useSelector } from "react-redux";
+import { getCurrentUserData } from "../../store/users";
 
 const PersonalPage = () => {
     const params = useParams();
     const { edit } = params;
     const history = useHistory();
-    // const currentUserId = useSelector(getCurrentUserId());
-    const { currentUser } = useAuth();
-    // const currentUserId = currentUser._id;
+
+    const currentUser = useSelector(getCurrentUserData());
 
     const handleClick = () => {
         history.push(history.location.pathname + "/edit");

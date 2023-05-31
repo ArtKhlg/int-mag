@@ -1,10 +1,15 @@
 import React from "react";
-import { useProducts } from "../../hooks/useProducts";
 import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
+import { getProductsList } from "../../store/products";
 
 const RecommendProducts = ({ categoryId }) => {
-    const { products } = useProducts();
+    const products = useSelector(getProductsList());
     const filteredProducts = products.filter((p) => p.category === categoryId);
+    const handleClick = (target) => {
+        window.scrollTo(0, 0);
+        window.location.pathname = `/products/${target}`;
+    };
     return (
         <>
             <section style={{ backgroundColor: "#eee" }}>
@@ -21,6 +26,8 @@ const RecommendProducts = ({ categoryId }) => {
                                     className="d-flex col-lg-4 col-md-12 mb-4"
                                     height="225"
                                     width="294"
+                                    role="button"
+                                    onClick={() => handleClick(p._id)}
                                 >
                                     <div className="card">
                                         <div className="d-block" width="10rem">
@@ -29,33 +36,12 @@ const RecommendProducts = ({ categoryId }) => {
                                                 className="mw-100"
                                                 width="237"
                                             />
-                                            <a href={`/products/${p._id}`}>
-                                                <div className="hover-overlay">
-                                                    <div
-                                                        className="mask"
-                                                        style={{
-                                                            backgroundColor:
-                                                                "rgba(251, 251, 251, 0.15)"
-                                                        }}
-                                                    ></div>
-                                                </div>
-                                            </a>
                                         </div>
                                         <div className="card-body">
-                                            <a
-                                                href={`/products/${p._id}`}
-                                                className="text-reset"
-                                            >
-                                                <h5 className="card-title mb-3">
-                                                    {p.name}
-                                                </h5>
-                                            </a>
-                                            {/* <a
-                                                    href={`/products/${p._id}/${p.category}`}
-                                                    className="text-reset"
-                                                >
-                                                    <p>{p.category}</p>
-                                                </a> */}
+                                            <h5 className="card-title mb-3">
+                                                {p.name}
+                                            </h5>
+
                                             <h6 className="mb-3">
                                                 {p.price} руб.
                                             </h6>

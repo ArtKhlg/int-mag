@@ -1,18 +1,16 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
-import { useProducts } from "../hooks/useProducts";
+import { useDispatch } from "react-redux";
+import { deleteProduct } from "../store/products";
 
 const DeleteProduct = ({ product }) => {
-    const { deleteProductFromList } = useProducts();
+    const dispatch = useDispatch();
     const history = useHistory();
 
-    const handleDelete = async (item) => {
-        try {
-            await deleteProductFromList(item._id);
-        } catch (error) {
-            console.log(error.message);
-        }
+    const handleDelete = (item) => {
+        dispatch(deleteProduct(item._id));
+
         history.push(`/admin`);
     };
     return (

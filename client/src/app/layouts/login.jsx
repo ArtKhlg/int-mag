@@ -20,9 +20,13 @@ const Login = () => {
                     {formType === "register" ? (
                         <>
                             <h3 className="mb-4">Регистрация</h3>
-                            <p>Уже есть аккаунт?</p>
                             <p>
-                                <a role="button" onClick={toggleFormType}>
+                                Уже есть аккаунт?{" "}
+                                <a
+                                    role="button"
+                                    className="btn btn-success"
+                                    onClick={toggleFormType}
+                                >
                                     Войти
                                 </a>
                             </p>
@@ -32,11 +36,15 @@ const Login = () => {
                     ) : (
                         <>
                             <h3 className="mb-4">Авторизация</h3>
-                            <p>Еще нет аккаунта? </p>
                             <p>
-                                <a role="button" onClick={toggleFormType}>
+                                Еще нет аккаунта?{" "}
+                                <a
+                                    role="button"
+                                    className="btn btn-info"
+                                    onClick={toggleFormType}
+                                >
                                     Регистрация
-                                </a>
+                                </a>{" "}
                             </p>
 
                             <LoginForm />

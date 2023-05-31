@@ -6,7 +6,10 @@ const schema = new Schema(
       type: String,
       required: true,
     },
-    category: { type: Schema.Types.ObjectId, ref: "Category" },
+    category: {
+      type: String,
+      required: true,
+    },
     price: {
       type: Number,
       required: true,
@@ -15,9 +18,16 @@ const schema = new Schema(
       type: Number,
       required: true,
     },
+    desc: {
+      type: String,
+      required: true,
+    },
     image: {
       type: String,
       required: true,
+    },
+    rate: {
+      type: Array,
     },
   },
   {

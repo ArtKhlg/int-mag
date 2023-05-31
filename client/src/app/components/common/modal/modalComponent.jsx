@@ -7,6 +7,7 @@ const Modal = ({ active, setActive, children }) => {
         <div
             className={active ? "modal active" : "modal"}
             onClick={() => setActive(false)}
+            // style={active ? { opacity: 1 } : { opacity: 0 }}
         >
             <div
                 className={active ? "modal__content active" : "modal__content"}

@@ -1,36 +1,45 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom/cjs/react-router-dom";
-import { useProducts } from "../hooks/useProducts";
 import TextField from "./common/form/textField";
 import { validator } from "../utils/validator";
-import { useCategories } from "../hooks/useCategories";
 import SelectField from "./common/form/selectField";
 import TextAreaField from "./common/form/textAreaField";
+import { getCategories, getCategoriesLoadingStatus } from "../store/categories";
+import { useDispatch, useSelector } from "react-redux";
+import { getProductById, updateProduct } from "../store/products";
 
 const EditProductPage = () => {
     const { edit } = useParams();
-    const { getProduct, updateProductData } = useProducts();
-    const { categories } = useCategories();
+    const dispatch = useDispatch();
+    const categories = useSelector(getCategories());
+    const categoriesLoading = useSelector(getCategoriesLoadingStatus());
     const productId = edit.slice(4, edit.length);
-    const product = getProduct(productId);
+    const product = useSelector(getProductById(productId));
     const history = useHistory();
     const [isLoading, setIsLoading] = useState(true);
     const [data, setData] = useState();
     const [errors, setErrors] = useState({});
-
+    const [productCategoryName, setProductCategoryName] = useState();
     useEffect(() => {
-        if (product && !data) {
+        if (product && !categoriesLoading && !data) {
             setData({
                 ...product
             });
         }
-    }, [product, data]);
+    }, [product, categoriesLoading, data]);
     useEffect(() => {
         if (data && isLoading) {
             setIsLoading(false);
         }
     }, [data]);
 
+    useEffect(() => {
+        if (data) {
+            setProductCategoryName(
+                categories.filter((c) => c.catNumber === data.category)[0].name
+            );
+        }
+    }, [data]);
     const validatorConfig = {
         name: {
             isRequired: {
@@ -73,6 +82,15 @@ const EditProductPage = () => {
         }));
     };
 
+    const handleChangeCategory = (target) => {
+        const dataCat = categories.filter((c) => c.name === target.value);
+
+        setData((prevState) => ({
+            ...prevState,
+            [target.name]: dataCat[0]._id
+        }));
+    };
+
     const handleChangeNumber = (target) => {
         const numberValue = +target.value;
         setData((prevState) => ({
@@ -87,24 +105,16 @@ const EditProductPage = () => {
     };
     const isValid = Object.keys(errors).length === 0;
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        // const dataCat = categories.filter((c) => c.name === data.category);
         const isValid = validate();
         if (!isValid) return;
-        try {
-            await updateProductData({
+
+        dispatch(
+            updateProduct({
                 ...data
-            });
-        } catch (error) {
-            setErrors(error);
-        }
-        // dispatch(
-        //     updateUser({
-        //         ...data,
-        //         qualities: data.qualities.map((q) => q.value)
-        //     })
-        // );
+            })
+        );
         history.push(`/admin`);
     };
     return (
@@ -132,8 +142,8 @@ const EditProductPage = () => {
                                 defaultOption="Выберите категорию для товара"
                                 options={categories}
                                 name="category"
-                                onChange={handleChange}
-                                value={data.category}
+                                onChange={handleChangeCategory}
+                                value={productCategoryName}
                                 error={errors.category}
                             />
                             <TextField
@@ -195,9 +205,5 @@ const EditProductPage = () => {
         </>
     );
 };
-
-// EditProductPage.propTypes = {
-//     product: PropTypes.object
-// };
 
 export default EditProductPage;

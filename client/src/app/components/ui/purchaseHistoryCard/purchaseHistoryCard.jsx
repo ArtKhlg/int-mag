@@ -1,9 +1,11 @@
 import React from "react";
-import { useAuth } from "../../../hooks/useAuth";
 import Accordion from "./accordion";
+import { useSelector } from "react-redux";
+import { getCurrentUserData } from "../../../store/users";
 
 const PurchaseHistoryCard = () => {
-    const { currentUser } = useAuth();
+    const currentUser = useSelector(getCurrentUserData());
+
     return (
         <>
             {currentUser.purchaseHistory.map((purch) => {

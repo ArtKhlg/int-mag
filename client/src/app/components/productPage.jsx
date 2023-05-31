@@ -1,64 +1,102 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { useHistory } from "react-router-dom";
-import { useProducts } from "../hooks/useProducts";
-import { useCategories } from "../hooks/useCategories";
 import Category from "./ui/category";
-import { useAuth } from "../hooks/useAuth";
 import RecommendProducts from "./ui/recommendProducts";
+import { useDispatch, useSelector } from "react-redux";
+import {
+    getCategoriesLoadingStatus,
+    getCategoryById
+} from "../store/categories";
+import { getProductById, getProductsLoadingStatus } from "../store/products";
+import { getCurrentUserData, updateUser } from "../store/users";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ProductPage = ({ productId }) => {
-    const { currentUser, updateUserData } = useAuth();
-    const { products } = useProducts();
+    const dispatch = useDispatch();
     const history = useHistory();
-    const [product, setProduct] = useState();
+
+    const currentUser = useSelector(getCurrentUserData());
     const [order, setOrder] = useState(
         currentUser?.orders?.filter((o) => o._id === productId)
     );
 
-    useEffect(() => {
-        setProduct(getProduct(productId));
-    }, [products]);
-    const { isLoading, getProduct } = useProducts();
-    const { getCategory } = useCategories();
+    const isLoading = useSelector(getProductsLoadingStatus());
+    const product = useSelector(getProductById(productId));
 
-    const category = getCategory(product?.category);
+    const category = useSelector(getCategoryById(product?.category));
+    const categoriesLoading = useSelector(getCategoriesLoadingStatus());
+    console.log("product", product);
+    console.log("category", category);
+    let currentUserOrders = [...new Set(currentUser?.orders)];
 
     const handleClick = () => {
         history.push(`/`);
     };
     const handleClickCategory = () => {
-        history.push(`/products/${productId}/${category._id}`);
+        history.push(`/products/${productId}/${category.catNumber}`);
     };
 
-    const handleClickDecrement = async () => {
-        try {
-            const removeId = currentUser.orders.findIndex(
-                (o) => o._id === productId
+    const handleClickDecrement = () => {
+        const removeId = currentUserOrders.findIndex(
+            (o) => o._id === productId
+        );
+        currentUserOrders.splice(removeId, 1);
+        setOrder(currentUserOrders.filter((o) => o._id === productId));
+        dispatch(updateUser({ ...currentUser, orders: currentUserOrders }));
+    };
+    const handleClickBuy = () => {
+        if (!order || currentUserOrders === null) {
+            setOrder([product]);
+            currentUserOrders = [product];
+        } else {
+            setOrder((prevState) => [...prevState, product]);
+            currentUserOrders.push(product);
+        }
+
+        dispatch(
+            updateUser({
+                ...currentUser,
+                orders: currentUserOrders
+            })
+        );
+    };
+
+    const handleClickFavourite = () => {
+        let newFavourite = currentUser?.favourite;
+
+        if (
+            currentUser?.favourite?.filter((prod) => prod._id === product._id)
+                .length > 0
+        ) {
+            newFavourite = [...currentUser.favourite].filter(
+                (prod) => prod._id !== product._id
             );
-            currentUser.orders.splice(removeId, 1);
-            setOrder(currentUser?.orders?.filter((o) => o._id === productId));
-            await updateUserData({ ...currentUser });
-        } catch (error) {
-            console.log(error);
-        }
-    };
-    console.log(currentUser.orders);
-    const handleClickBuy = async () => {
-        try {
-            if (!order || currentUser.orders === null) {
-                setOrder([product]);
-                currentUser.orders = [product];
+            dispatch(
+                updateUser({
+                    ...currentUser,
+                    favourite: newFavourite
+                })
+            );
+            toast.error("Товар удален из избранного");
+        } else {
+            if (!currentUser.favourite) {
+                newFavourite = [product];
+                toast.success("Товар добавлен в избранное");
             } else {
-                setOrder((prevState) => [...prevState, product]);
-                currentUser.orders.push(product);
+                newFavourite = [...currentUser.favourite, product];
+                toast.success("Товар добавлен в избранное");
             }
-            await updateUserData({ ...currentUser });
-        } catch (error) {
-            console.log(error);
+            dispatch(
+                updateUser({
+                    ...currentUser,
+                    favourite: newFavourite
+                })
+            );
         }
     };
-    if (!isLoading && product) {
+    if (!isLoading && product && !categoriesLoading) {
         return (
             <>
                 <span
@@ -77,6 +115,33 @@ const ProductPage = ({ productId }) => {
                     {category?.name}
                 </span>
                 <div className="d-flex flex-wrap card m-5 bg-light flex-column contentJustify-center">
+                    <div className="position-absolute end-0 p-4">
+                        {currentUser &&
+                        currentUser?.favourite &&
+                        currentUser?.favourite.filter(
+                            (prod) => prod._id === product._id
+                        ).length > 0 ? (
+                            <i
+                                role="button"
+                                onClick={handleClickFavourite}
+                                className="pt-4 bi bi-heart-fill"
+                                style={{
+                                    fontSize: "40px",
+                                    color: "red"
+                                }}
+                            ></i>
+                        ) : (
+                            <i
+                                role="button"
+                                onClick={handleClickFavourite}
+                                className="pt-4 bi bi-heart"
+                                style={{
+                                    fontSize: "40px",
+                                    color: "red"
+                                }}
+                            ></i>
+                        )}
+                    </div>
                     <div className="row g-0">
                         <div className="col m-4">
                             <img
@@ -96,7 +161,7 @@ const ProductPage = ({ productId }) => {
                                 </h5>
 
                                 <h6 className="card-text">
-                                    <Category id={productId} />
+                                    <Category id={category.catNumber} />
                                 </h6>
 
                                 <h6 className="card-text">
@@ -182,6 +247,7 @@ const ProductPage = ({ productId }) => {
                     <h2>Вернуться в каталог</h2>
                 </button>
                 <RecommendProducts categoryId={product.category} />
+                <ToastContainer />
             </>
         );
     } else return "loading...";

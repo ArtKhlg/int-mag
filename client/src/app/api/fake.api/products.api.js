@@ -1,4 +1,3 @@
-// import { categories } from "./categories.api";
 const categories = {
     autos: {
         id: "1001",

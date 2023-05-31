@@ -3,10 +3,10 @@ import { validator } from "../../utils/validator";
 import TextField from "../common/form/textField";
 import RadioField from "../common/form/radioField";
 import CheckBoxField from "../common/form/checkBoxField";
-import { useAuth } from "../../hooks/useAuth";
-import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import { useDispatch } from "react-redux";
+import { signUp } from "../../store/users";
 const RegisterForm = () => {
-    const history = useHistory();
+    const dispatch = useDispatch();
     const [data, setData] = useState({
         email: "",
         password: "",
@@ -73,20 +73,14 @@ const RegisterForm = () => {
         return Object.keys(errors).length === 0;
     };
 
-    const { signUp } = useAuth();
-
     const isValid = Object.keys(errors).length === 0;
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        try {
-            await signUp(data);
-            history.push("/");
-        } catch (error) {
-            setErrors(error);
-        }
+
+        dispatch(signUp(data));
     };
     return (
         <form onSubmit={handleSubmit}>
@@ -138,7 +132,7 @@ const RegisterForm = () => {
                 disabled={!isValid}
                 className="btn btn-primary w-100 mx-auto"
             >
-                Submit
+                Зарегистрироваться
             </button>
         </form>
     );

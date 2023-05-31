@@ -1,11 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
-import { useCategories } from "../../hooks/useCategories";
+import { useDispatch, useSelector } from "react-redux";
+import {
+    getCategoriesLoadingStatus,
+    getCategoryById,
+    loadCategoriesList
+} from "../../store/categories";
 
 const Category = ({ id }) => {
-    const { getCategory } = useCategories();
+    const dispatch = useDispatch();
+    const category = useSelector(getCategoryById(id));
+    const isLoading = useSelector(getCategoriesLoadingStatus());
 
-    const category = getCategory(id);
+    useEffect(() => {
+        dispatch(loadCategoriesList());
+    }, []);
+    if (isLoading) return "Loading...";
     if (category) {
         return <p>Категория: {category.name}</p>;
     }

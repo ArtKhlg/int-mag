@@ -1,22 +1,20 @@
 import React, { useState } from "react";
-// import api from "../api";
 import CategoriesList from "./categoriesList";
 import SearchProducts from "./searchProducts";
 import ProductsList from "./productsList";
 import PropTypes from "prop-types";
 import { useHistory } from "react-router-dom";
-import { useProducts } from "../hooks/useProducts";
-import { useCategories } from "../hooks/useCategories";
+import { useSelector } from "react-redux";
+import { getCategories } from "../store/categories";
+import { getProductsList } from "../store/products";
 
 const ProductsListPage = ({ categoryId }) => {
     const [selectedCat, setSelectedCat] = useState();
     const [searchData, setSearchData] = useState({ search: "" });
     const history = useHistory();
-
-    const { products } = useProducts();
-    const { categories } = useCategories();
+    const products = useSelector(getProductsList());
+    const categories = useSelector(getCategories());
     const handleCategorySelect = (item) => {
-        history.push(`/`);
         setSelectedCat(item);
         setSearchData({ search: "" });
     };
@@ -39,7 +37,9 @@ const ProductsListPage = ({ categoryId }) => {
         const filteredProducts = categoryId
             ? products.filter((product) => product.category === categoryId)
             : selectedCat
-            ? products.filter((product) => product.category === selectedCat._id)
+            ? products.filter(
+                  (product) => product.category === selectedCat.catNumber
+              )
             : typeof searchData.search !== "string"
             ? products
             : products.filter((product) =>

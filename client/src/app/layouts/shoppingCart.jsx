@@ -1,33 +1,44 @@
 import React, { useState } from "react";
-import { useAuth } from "../hooks/useAuth";
 import { useHistory } from "react-router-dom";
-import { useProducts } from "../hooks/useProducts";
 import Modal from "../components/common/modal/modalComponent";
 import { nanoid } from "nanoid";
+import { useDispatch, useSelector } from "react-redux";
+import {
+    getProductsList,
+    loadProductsList,
+    updateProduct
+} from "../store/products";
+import { getCurrentUserData, updateUser } from "../store/users";
 
 const ShoppingCart = () => {
     const history = useHistory();
-    const { getProduct, products, updateProductData } = useProducts();
-    const { currentUser, updateUserData } = useAuth();
+    const dispatch = useDispatch();
+    const products = useSelector(getProductsList());
+    const getProductById = (id) => {
+        return products?.filter((p) => p._id === id)[0];
+    };
+    const currentUser = useSelector(getCurrentUserData());
+    let currentUserOrders = [...new Set(currentUser?.orders)];
     const findUniqOrders = () => {
-        if (currentUser.orders) {
-            currentUser.orders.sort((a, b) => {
+        if (currentUser?.orders) {
+            currentUserOrders.sort((a, b) => {
                 if (a.name < b.name) return -1;
                 if (a.name > b.name) return 1;
                 return 0;
             });
             const arrIds = [];
-            for (const prod of currentUser.orders) {
+            for (const prod of currentUserOrders) {
                 arrIds.push(prod._id);
             }
             const arrIdsUniq = [...new Set(arrIds)];
-            for (let i = 0; i < currentUser.orders.length; i++) {
+            for (let i = 0; i < currentUserOrders.length; i++) {
                 for (let j = 0; j < arrIdsUniq.length; j++) {
-                    if (currentUser.orders[i]._id === arrIdsUniq[j]) {
-                        arrIdsUniq[j] = currentUser.orders[i];
+                    if (currentUserOrders[i]._id === arrIdsUniq[j]) {
+                        arrIdsUniq[j] = currentUserOrders[i];
                     }
                 }
             }
+
             return arrIdsUniq;
         } else {
             return null;
@@ -36,11 +47,13 @@ const ShoppingCart = () => {
     const summaryPrice = currentUser?.orders
         ?.reduce((acc, ord) => acc + ord.price, 0)
         .toLocaleString();
-    const uniqueProducts = findUniqOrders();
-    uniqueProducts?.map((prod) => {
-        return (prod.quantity = currentUser.orders.filter(
-            (ord) => ord._id === prod._id
-        ).length);
+    const unique = findUniqOrders();
+    const uniqueProducts = unique?.map((prod) => {
+        return {
+            ...prod,
+            quantity: currentUserOrders.filter((ord) => ord._id === prod._id)
+                .length
+        };
     });
 
     const handleClickRemoveItem = (item) => {
@@ -51,7 +64,7 @@ const ShoppingCart = () => {
             }
         }
         currentUser.orders = newOrders;
-        updateUserData({ ...currentUser });
+        dispatch(updateUser({ ...currentUser, orders: currentUserOrders }));
     };
 
     const handleClickProductPage = (item) => {
@@ -66,56 +79,57 @@ const ShoppingCart = () => {
             : number + " товаров";
     };
 
-    const handleClickDecrement = async (item) => {
-        try {
-            const removeId = currentUser.orders.findIndex(
-                (o) => o._id === item._id
-            );
-            currentUser.orders.splice(removeId, 1);
-            await updateUserData({ ...currentUser });
-        } catch (error) {
-            console.log(error);
-        }
+    const handleClickDecrement = (item) => {
+        const removeId = currentUserOrders.findIndex((o) => o._id === item._id);
+        currentUserOrders.splice(removeId, 1);
+        dispatch(updateUser({ ...currentUser, orders: currentUserOrders }));
     };
 
-    const handleClickIncrement = async (item) => {
-        try {
-            currentUser.orders.push(item);
-            await updateUserData({ ...currentUser });
-        } catch (error) {
-            console.log(error);
-        }
+    const handleClickIncrement = (item) => {
+        currentUserOrders.push(item);
+        dispatch(updateUser({ ...currentUser, orders: currentUserOrders }));
     };
     const handleClickOrder = async () => {
-        products.map((prod) => {
+        const productsAfterOrder = products.map((prod) => {
+            let quantityAfterOrder = prod.quantity;
             for (const ord of uniqueProducts) {
                 if (prod._id === ord._id) {
-                    prod.quantity -= ord.quantity;
+                    quantityAfterOrder = prod.quantity - ord.quantity;
+                    return { ...prod, quantity: quantityAfterOrder };
                 }
             }
-            return prod;
+            return { ...prod, quantity: quantityAfterOrder };
         });
-        products.map((prod) => {
-            return updateProductData({ ...prod });
+        productsAfterOrder.map((prod) => {
+            return dispatch(updateProduct({ ...prod }));
         });
-        currentUser.purchaseHistory
-            ? (currentUser.purchaseHistory = [
-                  ...currentUser.purchaseHistory,
+        let currentUserPurchaseHistory = currentUser.purchaseHistory;
+
+        currentUserPurchaseHistory
+            ? (currentUserPurchaseHistory = [
+                  ...currentUserPurchaseHistory,
                   {
                       _id: nanoid(),
                       created_at: Date.now(),
                       purchase: uniqueProducts
                   }
               ])
-            : (currentUser.purchaseHistory = [
+            : (currentUserPurchaseHistory = [
                   {
                       _id: nanoid(),
                       created_at: Date.now(),
                       purchase: uniqueProducts
                   }
               ]);
-        currentUser.orders = [];
-        await updateUserData({ ...currentUser });
+        currentUserOrders = [];
+        dispatch(
+            updateUser({
+                ...currentUser,
+                orders: currentUserOrders,
+                purchaseHistory: currentUserPurchaseHistory
+            })
+        );
+        dispatch(loadProductsList());
         history.push("/thanks");
     };
 
@@ -123,7 +137,7 @@ const ShoppingCart = () => {
     return (
         <>
             (
-            {currentUser.orders ? (
+            {currentUser?.orders && currentUser?.orders.length > 0 ? (
                 <>
                     <section
                         className="h-100 h-custom"
@@ -146,9 +160,7 @@ const ShoppingCart = () => {
                                                             </h1>
                                                             <h6 className="mb-0 text-muted">
                                                                 {renderPhrase(
-                                                                    currentUser
-                                                                        .orders
-                                                                        .length
+                                                                    currentUserOrders.length
                                                                 )}{" "}
                                                             </h6>
                                                         </div>
@@ -206,7 +218,7 @@ const ShoppingCart = () => {
                                                                             </span>
                                                                         </div>
                                                                         {o.quantity <
-                                                                        getProduct(
+                                                                        getProductById(
                                                                             o._id
                                                                         )
                                                                             ?.quantity ? (
