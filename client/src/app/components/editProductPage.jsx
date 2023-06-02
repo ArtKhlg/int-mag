@@ -7,6 +7,7 @@ import TextAreaField from "./common/form/textAreaField";
 import { getCategories, getCategoriesLoadingStatus } from "../store/categories";
 import { useDispatch, useSelector } from "react-redux";
 import { getProductById, updateProduct } from "../store/products";
+import Loading from "./common/loading";
 
 const EditProductPage = () => {
     const { edit } = useParams();
@@ -198,7 +199,7 @@ const EditProductPage = () => {
                             </button>
                         </form>
                     ) : (
-                        "Loading..."
+                        <Loading />
                     )}
                 </div>
             </div>

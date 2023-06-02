@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CategoriesList from "./categoriesList";
 import SearchProducts from "./searchProducts";
 import ProductsList from "./productsList";
@@ -7,6 +7,7 @@ import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { getCategories } from "../store/categories";
 import { getProductsList } from "../store/products";
+import Loading from "./common/loading";
 
 const ProductsListPage = ({ categoryId }) => {
     const [selectedCat, setSelectedCat] = useState();
@@ -18,7 +19,7 @@ const ProductsListPage = ({ categoryId }) => {
         setSelectedCat(item);
         setSearchData({ search: "" });
     };
-
+    const [filteredProducts, setFilteredProducts] = useState(products);
     const handleChange = ({ target }) => {
         setSearchData((prevState) => ({
             ...prevState,
@@ -32,9 +33,13 @@ const ProductsListPage = ({ categoryId }) => {
         setSelectedCat();
         setSearchData({ search: "" });
     };
+    let newFiltProd = [];
 
+    useEffect(() => {
+        setFilteredProducts(newFiltProd);
+    }, [selectedCat]);
     if (products && categories) {
-        const filteredProducts = categoryId
+        newFiltProd = categoryId
             ? products.filter((product) => product.category === categoryId)
             : selectedCat
             ? products.filter(
@@ -47,6 +52,7 @@ const ProductsListPage = ({ categoryId }) => {
                       .toLowerCase()
                       .includes(searchData.search.toLowerCase())
               );
+        console.log("filteredProducts", filteredProducts);
         return (
             <div>
                 <div className="d-flex flex-column flex-shrink-0 p-3">
@@ -72,14 +78,14 @@ const ProductsListPage = ({ categoryId }) => {
                             </button>
                         </div>
                     )}
-                    <div className="d-flex flex-column contentJustify-center">
+                    <div className="d-flex flex-column content-justify-center">
                         <ProductsList products={filteredProducts} />
                     </div>
                 </div>
             </div>
         );
     }
-    return "Loading...";
+    return <Loading />;
 };
 
 ProductsListPage.propTypes = {

@@ -8,6 +8,7 @@ import TextAreaField from "./common/form/textAreaField";
 import { useDispatch, useSelector } from "react-redux";
 import { getCategories } from "../store/categories";
 import { createProduct } from "../store/products";
+import Loading from "./common/loading";
 const initialState = {
     name: "",
     category: "",
@@ -174,7 +175,7 @@ const AddProductPage = () => {
                             </button>
                         </form>
                     ) : (
-                        "Loading..."
+                        <Loading />
                     )}
                 </div>
             </div>

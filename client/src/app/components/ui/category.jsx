@@ -6,6 +6,7 @@ import {
     getCategoryById,
     loadCategoriesList
 } from "../../store/categories";
+import Loading from "../common/loading";
 
 const Category = ({ id }) => {
     const dispatch = useDispatch();
@@ -15,7 +16,7 @@ const Category = ({ id }) => {
     useEffect(() => {
         dispatch(loadCategoriesList());
     }, []);
-    if (isLoading) return "Loading...";
+    if (isLoading) return <Loading />;
     if (category) {
         return <p>Категория: {category.name}</p>;
     }

@@ -14,7 +14,7 @@ const NavBar = () => {
     };
     return (
         <>
-            <nav className="navbar bg-light mb-3">
+            <nav className="navbar sticky-top bg-light mb-3">
                 <div className="container-fluid">
                     <ul className="nav">
                         <li

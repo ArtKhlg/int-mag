@@ -5,6 +5,7 @@ import TextField from "../common/form/textField";
 import RadioField from "../common/form/radioField";
 import { getCurrentUserData, updateUser } from "../../store/users";
 import { useDispatch, useSelector } from "react-redux";
+import Loading from "../common/loading";
 
 const EditUserPage = () => {
     const history = useHistory();
@@ -113,7 +114,7 @@ const EditUserPage = () => {
                             </button>
                         </form>
                     ) : (
-                        "Loading..."
+                        <Loading />
                     )}
                 </div>
             </div>

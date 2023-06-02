@@ -12,6 +12,7 @@ import { getProductById, getProductsLoadingStatus } from "../store/products";
 import { getCurrentUserData, updateUser } from "../store/users";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Loading from "./common/loading";
 
 const ProductPage = ({ productId }) => {
     const dispatch = useDispatch();
@@ -96,6 +97,7 @@ const ProductPage = ({ productId }) => {
             );
         }
     };
+    console.log("currentUser", currentUser);
     if (!isLoading && product && !categoriesLoading) {
         return (
             <>
@@ -116,30 +118,36 @@ const ProductPage = ({ productId }) => {
                 </span>
                 <div className="d-flex flex-wrap card m-5 bg-light flex-column contentJustify-center">
                     <div className="position-absolute end-0 p-4">
-                        {currentUser &&
-                        currentUser?.favourite &&
-                        currentUser?.favourite.filter(
-                            (prod) => prod._id === product._id
-                        ).length > 0 ? (
-                            <i
-                                role="button"
-                                onClick={handleClickFavourite}
-                                className="pt-4 bi bi-heart-fill"
-                                style={{
-                                    fontSize: "40px",
-                                    color: "red"
-                                }}
-                            ></i>
+                        {currentUser !== null ? (
+                            <>
+                                {" "}
+                                {currentUser?.favourite &&
+                                currentUser?.favourite.filter(
+                                    (prod) => prod._id === product._id
+                                ).length > 0 ? (
+                                    <i
+                                        role="button"
+                                        onClick={handleClickFavourite}
+                                        className="pt-4 bi bi-heart-fill"
+                                        style={{
+                                            fontSize: "40px",
+                                            color: "red"
+                                        }}
+                                    ></i>
+                                ) : (
+                                    <i
+                                        role="button"
+                                        onClick={handleClickFavourite}
+                                        className="pt-4 bi bi-heart"
+                                        style={{
+                                            fontSize: "40px",
+                                            color: "red"
+                                        }}
+                                    ></i>
+                                )}
+                            </>
                         ) : (
-                            <i
-                                role="button"
-                                onClick={handleClickFavourite}
-                                className="pt-4 bi bi-heart"
-                                style={{
-                                    fontSize: "40px",
-                                    color: "red"
-                                }}
-                            ></i>
+                            ""
                         )}
                     </div>
                     <div className="row g-0">
@@ -250,7 +258,7 @@ const ProductPage = ({ productId }) => {
                 <ToastContainer />
             </>
         );
-    } else return "loading...";
+    } else return <Loading />;
 };
 
 ProductPage.propTypes = {

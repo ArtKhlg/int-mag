@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -8,6 +8,7 @@ import {
 } from "../../../store/users";
 import { loadCategoriesList } from "../../../store/categories";
 import { loadProductsList } from "../../../store/products";
+import Loading from "../../common/loading";
 
 const AppLoader = ({ children }) => {
     const dispatch = useDispatch();
@@ -20,7 +21,7 @@ const AppLoader = ({ children }) => {
             dispatch(loadUsersList());
         }
     }, [isLoggedIn]);
-    if (usersStatusLoading) return "Loading...";
+    if (usersStatusLoading) return <Loading />;
     return children;
 };
 

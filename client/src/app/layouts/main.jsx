@@ -5,7 +5,9 @@ const Main = () => {
     return (
         <>
             <div style={{ backgroundColor: "#eee" }}>
-                <ProductsListPage />
+                <div>
+                    <ProductsListPage />
+                </div>
             </div>
         </>
     );
