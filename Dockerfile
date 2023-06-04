@@ -24,6 +24,8 @@ COPY server /app
 
 COPY --from=client /app/client/build /app/client
 
+RUN npm rebuild
+
 EXPOSE 8080
 
 CMD ["npm", "start"]
