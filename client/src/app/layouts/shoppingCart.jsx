@@ -63,8 +63,8 @@ const ShoppingCart = () => {
                 newOrders.push(prod);
             }
         }
-        currentUser.orders = newOrders;
-        dispatch(updateUser({ ...currentUser, orders: currentUserOrders }));
+        // currentUser.orders = newOrders;
+        dispatch(updateUser({ ...currentUser, orders: newOrders }));
     };
 
     const handleClickProductPage = (item) => {
