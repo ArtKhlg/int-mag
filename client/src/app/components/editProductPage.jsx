@@ -88,7 +88,7 @@ const EditProductPage = () => {
 
         setData((prevState) => ({
             ...prevState,
-            [target.name]: dataCat[0]._id
+            [target.name]: dataCat[0].catNumber
         }));
     };
 
