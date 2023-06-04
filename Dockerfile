@@ -5,7 +5,7 @@ WORKDIR /app/client
 COPY client/package.json /app/client
 
 RUN npm install
-RUN npm update
+# RUN npm update
 
 COPY client /app/client
 
@@ -18,7 +18,7 @@ WORKDIR /app
 COPY server/package.json /app
 
 RUN npm install
-RUN npm update
+# RUN npm update
 
 COPY server /app
 
