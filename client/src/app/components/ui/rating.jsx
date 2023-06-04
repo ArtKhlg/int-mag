@@ -8,7 +8,6 @@ const Rating = ({ productRating }) => {
     if (!Array.isArray(productRating) || productRating.length === 0) {
         productRating = [{ rate: 0 }];
     }
-    console.log(productRating);
 
     const productRatingCounter = (productRatingArray) => {
         const sum = productRatingArray.reduce(
@@ -42,7 +41,6 @@ const Rating = ({ productRating }) => {
         });
     }
 
-    console.log(rate);
     return (
         <>
             {rate.map((r) => (

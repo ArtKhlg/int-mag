@@ -17,7 +17,6 @@ const AdminPage = () => {
     const history = useHistory();
     const { edit } = useParams();
     const currentUser = useSelector(getCurrentUserData());
-    console.log(currentUser);
     const columns = {
         name: {
             path: "name",

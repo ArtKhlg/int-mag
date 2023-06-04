@@ -55,7 +55,6 @@ const ProductsList = ({ products }) => {
             }
         }
     };
-    console.log("sort in parent", sortProducts);
 
     return (
         <div>

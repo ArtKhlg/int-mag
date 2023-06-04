@@ -28,8 +28,6 @@ const ProductPage = ({ productId }) => {
 
     const category = useSelector(getCategoryById(product?.category));
     const categoriesLoading = useSelector(getCategoriesLoadingStatus());
-    console.log("product", product);
-    console.log("category", category);
     let currentUserOrders = [...new Set(currentUser?.orders)];
 
     const handleClick = () => {
@@ -97,7 +95,6 @@ const ProductPage = ({ productId }) => {
             );
         }
     };
-    console.log("currentUser", currentUser);
     if (!isLoading && product && !categoriesLoading) {
         return (
             <>

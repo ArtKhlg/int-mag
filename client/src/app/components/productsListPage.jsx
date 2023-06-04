@@ -37,7 +37,7 @@ const ProductsListPage = ({ categoryId }) => {
 
     useEffect(() => {
         setFilteredProducts(newFiltProd);
-    }, [selectedCat]);
+    }, [selectedCat, products]);
     if (products && categories) {
         newFiltProd = categoryId
             ? products.filter((product) => product.category === categoryId)
@@ -52,7 +52,6 @@ const ProductsListPage = ({ categoryId }) => {
                       .toLowerCase()
                       .includes(searchData.search.toLowerCase())
               );
-        console.log("filteredProducts", filteredProducts);
         return (
             <div>
                 <div className="d-flex flex-column flex-shrink-0 p-3">

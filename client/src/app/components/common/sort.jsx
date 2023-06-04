@@ -26,7 +26,6 @@ const SortProducts = ({
         };
         if (sortType === true) {
             if (sortParam === "price") {
-                console.log("я тут где прайс");
                 setSortProducts(
                     sortProducts.sort((a, b) => {
                         return a.price - b.price;
@@ -65,7 +64,6 @@ const SortProducts = ({
             }
             setSortType(!sortType);
         }
-        console.log("sort prod", sortProducts);
         history.push(`/`);
     };
     return (
