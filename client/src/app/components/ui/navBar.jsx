@@ -82,6 +82,15 @@ const NavBar = () => {
                             </>
                         )}
                     </ul>
+
+                    <figure>
+                        <blockquote className="blockquote">
+                            <p>Жить, как говорится, хорошо!</p>
+                        </blockquote>
+                        <figcaption className="blockquote-footer">
+                            Кавказская пленница или Новые приключения Шурика
+                        </figcaption>
+                    </figure>
                     <div className="d-flex">
                         {currentUser && currentUser.admin ? (
                             <>

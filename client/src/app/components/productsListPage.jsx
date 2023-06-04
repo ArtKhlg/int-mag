@@ -37,7 +37,7 @@ const ProductsListPage = ({ categoryId }) => {
 
     useEffect(() => {
         setFilteredProducts(newFiltProd);
-    }, [selectedCat, products]);
+    }, [selectedCat, products, searchData]);
     if (products && categories) {
         newFiltProd = categoryId
             ? products.filter((product) => product.category === categoryId)
@@ -63,6 +63,7 @@ const ProductsListPage = ({ categoryId }) => {
                 <div className="d-flex">
                     {categories && (
                         <div className="d-flex flex-column flex-shrink-0 p-3 w-25">
+                            <h5>Категории</h5>
                             <CategoriesList
                                 selectedItem={selectedCat}
                                 items={categories}
