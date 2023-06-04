@@ -95,7 +95,7 @@ const AddProductPage = () => {
         dispatch(
             createProduct({
                 ...data,
-                category: dataCat[0]._id
+                category: dataCat[0].catNumber
             })
         );
         history.push(`/admin`);
