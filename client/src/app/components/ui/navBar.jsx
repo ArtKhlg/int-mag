@@ -1,17 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import NavProfile from "./navProfile";
-import useMockData from "../../utils/mockData";
+// import useMockData from "../../utils/mockData";
 import { useSelector } from "react-redux";
 import { getCurrentUserData } from "../../store/users";
 
 const NavBar = () => {
     const currentUser = useSelector(getCurrentUserData());
-    const { initialize } = useMockData();
+    // const { initialize } = useMockData();
 
-    const handleClick = () => {
-        initialize();
-    };
+    // const handleClick = () => {
+    //     initialize();
+    // };
     return (
         <>
             <nav className="navbar sticky-top bg-light mb-3">
@@ -24,9 +24,9 @@ const NavBar = () => {
                             }}
                         >
                             <Link
-                                className="nav-link "
+                                className="nav-link"
                                 aria-current="page"
-                                to="/products"
+                                to="/main"
                             >
                                 Главная
                             </Link>
@@ -86,18 +86,18 @@ const NavBar = () => {
                         {currentUser && currentUser.admin ? (
                             <>
                                 <Link
-                                    className="btn d-flex align-items-center"
+                                    className="btn btn-light d-flex align-items-center"
                                     aria-current="page"
                                     to="/admin"
                                 >
                                     Администраторская
                                 </Link>
-                                <button
+                                {/* <button
                                     className="btn btn-danger"
                                     onClick={handleClick}
                                 >
                                     Подгрузить исходные товары
-                                </button>{" "}
+                                </button>{" "} */}
                             </>
                         ) : null}
                         {currentUser ? (

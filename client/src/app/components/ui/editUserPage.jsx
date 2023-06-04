@@ -95,9 +95,8 @@ const EditUserPage = () => {
 
                             <RadioField
                                 options={[
-                                    { name: "Male", value: "male" },
-                                    { name: "Female", value: "female" },
-                                    { name: "Other", value: "other" }
+                                    { name: "Мужской", value: "male" },
+                                    { name: "Женский", value: "female" }
                                 ]}
                                 value={data.sex}
                                 name="sex"

@@ -16,17 +16,28 @@ function Accordion({ purch }) {
     const [setHeight, setHeightState] = useState("0px");
     const [setRotate, setRotateState] = useState("accordion__icon");
     const content = useRef(null);
+    const currentUser = useSelector(getCurrentUserData());
+    const productsList = useSelector(getProductsList());
     const [rateStars, setRateStars] = useState([]);
     const [rate, setRate] = useState([]);
     const [product, setProduct] = useState({});
     const [hover, setHover] = useState(false);
     const [currentProductInPurchase, setCurrentProductInPurchase] = useState();
-    const productFromBase = useSelector(getProductById(product?._id));
-    const currentUser = useSelector(getCurrentUserData());
-    const productsList = useSelector(getProductsList());
+    const [productFromBase, setProductFromBase] = useState();
+    // const productFromBase = {
+    //     ...product,
+    //     quantity: productsList.filter((prod) => prod._id === product._id)[0]
+    //         ?.quantity
+    // };
     const dispatch = useDispatch();
     const rateCounter = [];
-
+    useEffect(() => {
+        setProductFromBase({
+            ...product,
+            quantity: productsList.filter((prod) => prod._id === product._id)[0]
+                ?.quantity
+        });
+    }, [product]);
     for (let i = 1; i <= 5; i++) {
         rateCounter.push({
             rating: i,
