@@ -12,7 +12,7 @@ module.exports = async () => {
 
 module.exports = async () => {
   const products = await Product.find();
-  if (products.length !== productMock.length) {
+  if (products.length === 0) {
     await createInitialEntity(Product, productMock);
   }
 };
